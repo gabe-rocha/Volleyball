@@ -7,13 +7,14 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private Transform mainCanvas;
     private static GameManager instance;
     public static GameManager Instance { get => instance; private set => instance = value; }
-    private int playerJustHitBall = 0, playerOneScore = 0, playerTwoScore = 0, playerServing = 1;
+    internal int playerJustHitBall = 0, playerOneScore = 0, playerTwoScore = 0, playerServing = 1;
+    private int playerWhoJustScored;
     private bool playerOneWon = false, playerTwoWon = false, isCountingDown = true;
 
     private void OnEnable() {
         EventManager.Instance.StartListening(EventManager.Events.MatchStarted, OnCountDownOver);
         EventManager.Instance.StartListening(EventManager.Events.BallIsInPosition, OnBallIsInPosition);
-        EventManager.Instance.StartListening(EventManager.Events.BallHitTheGround, OnBallHitGround);
+        EventManager.Instance.StartListeningWithBoolParam(EventManager.Events.BallHitTheGround, OnBallHitGround);
         EventManager.Instance.StartListeningWithIntParam(EventManager.Events.PlayerHitTheBall, OnPlayerHitBall);
 
     }
@@ -21,7 +22,7 @@ public class GameManager : MonoBehaviour {
     private void OnDisable() {
         EventManager.Instance.StopListening(EventManager.Events.MatchStarted, OnCountDownOver);
         EventManager.Instance.StopListening(EventManager.Events.BallIsInPosition, OnBallIsInPosition);
-        EventManager.Instance.StopListening(EventManager.Events.BallHitTheGround, OnBallHitGround);
+        EventManager.Instance.StopListeningWithBoolParam(EventManager.Events.BallHitTheGround, OnBallHitGround);
         EventManager.Instance.StopListeningWithIntParam(EventManager.Events.PlayerHitTheBall, OnPlayerHitBall);
     }
 
@@ -54,26 +55,34 @@ public class GameManager : MonoBehaviour {
     private void OnPlayerHitBall(int playerNumber) {
         playerJustHitBall = playerNumber;
     }
-    private void OnBallHitGround() {
-        if (playerJustHitBall == 1) {
+    private void OnBallHitGround(bool leftSide) {
+
+        // if (leftSide)
+        // Debug.Log("Ball hit left side");
+        // else
+        // Debug.Log("Ball hit right side");
+
+        if (playerJustHitBall == 1 && !leftSide || playerJustHitBall == 2 && !leftSide) {
             playerOneScore++;
             playerServing = 1;
+            playerWhoJustScored = 1;
 
-            if (playerOneScore >= Data.MatchScoreTarget) {
-                playerOneWon = true;
-                EventManager.Instance.TriggerEvent(EventManager.Events.MatchEnded);
-            }
-        } else if (playerJustHitBall == 2) {
+        } else if (playerJustHitBall == 2 && leftSide || playerJustHitBall == 1 && leftSide) {
             playerTwoScore++;
             playerServing = 2;
-
-            if (playerTwoScore >= Data.MatchScoreTarget) {
-                playerTwoWon = true;
-                EventManager.Instance.TriggerEvent(EventManager.Events.MatchEnded);
-            }
+            playerWhoJustScored = 2;
         }
 
-        StartCoroutine(StartNextSetCor());
+        if (playerOneScore >= Data.MatchScoreTarget) {
+            playerOneWon = true;
+            EventManager.Instance.TriggerEvent(EventManager.Events.MatchEnded);
+        } else if (playerTwoScore >= Data.MatchScoreTarget) {
+            playerTwoWon = true;
+            EventManager.Instance.TriggerEvent(EventManager.Events.MatchEnded);
+        } else {
+            StartCoroutine(StartNextSetCor());
+        }
+
     }
 
     private IEnumerator StartNextSetCor() {
@@ -94,5 +103,9 @@ public class GameManager : MonoBehaviour {
     }
     internal int GetCurrentBallServer() {
         return playerServing;
+    }
+
+    internal int GetPlayerWhoJustScored() {
+        return playerWhoJustScored;
     }
 }

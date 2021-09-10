@@ -3,30 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour {
+public class PlayerTwo : Player {
 
-    internal enum PlayerNumber {
-        Zero,
-        One,
-        Two
-    }
+    // [SerializeField] internal PlayerNumber playerNumber = PlayerNumber.Two;
+    // [SerializeField] new internal float walkSpeed = 1f;
+    // [SerializeField] new internal float walkDeadzone = 0.2f;
+    // [SerializeField] new internal Animator animPlayer;
+    // [SerializeField] new internal Transform ballServePosition, midOfCourtPosition;
 
-    [SerializeField] internal PlayerNumber playerNumber = PlayerNumber.One;
-    [SerializeField] internal float walkSpeed = 1f;
-    [SerializeField] internal float walkDeadzone = 0.2f;
-    [SerializeField] internal Animator animPlayer;
-    [SerializeField] internal Transform ballServePosition, midOfCourtPosition;
-    [SerializeField] internal PowerMeter powerMeter;
-
-    //
-    internal IState statePlayerIdle, statePlayerWalking, stateMovingToPosition, statePlayerAnsweringMath, statePlayerHittingBall, statePlayerCheering, statePlayerCrying;
+    // internal IState statePlayerIdle, statePlayerWalking, stateMovingToPosition, statePlayerAnsweringMath, statePlayerHittingBall, statePlayerCheering, statePlayerCrying;
+    // internal Rigidbody2D rb;
+    // internal Collider2D ball;
+    // internal bool ballIsHot = false; //means the ball is being played
 
     private StateMachine playerStateMachine;
-    internal Rigidbody2D rb;
-    internal Collider2D ball;
-    internal bool ballIsHot = false; //means the ball is being played
-    internal bool answeringQuestion = false;
-    bool isMySideLeft;
+    private bool isMySideLeft;
 
     private void OnEnable() {
         EventManager.Instance.StartListening(EventManager.Events.GetReadyForSetBegin, OnGetReadyForSetBegin);
@@ -66,8 +57,8 @@ public class Player : MonoBehaviour {
         playerStateMachine.SetState(statePlayerIdle);
 
         isMySideLeft = transform.position.x <= 0f;
-
-        Data.playerOne = this;
+        Data.playerTwo = this;
+        answeringQuestion = false;
     }
 
     void Update() {
@@ -77,14 +68,14 @@ public class Player : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D obj) {
         if (obj.gameObject.CompareTag("Ball")) {
 
-            if (ballIsHot == false || answeringQuestion) {
+            if (ballIsHot == false) {
                 return;
             }
 
             Debug.Log($"{name} hit the ball");
             ball = obj;
             playerStateMachine.SetState(statePlayerHittingBall);
-            EventManager.Instance.TriggerEvent(EventManager.Events.DisplayMathQuestion);
+            // EventManager.Instance.TriggerEvent(EventManager.Events.DisplayMathQuestion);
         }
     }
 
@@ -94,7 +85,6 @@ public class Player : MonoBehaviour {
 
     private void OnBallHitTheGround(bool ballHitLeftCourt) {
         ballIsHot = false;
-        answeringQuestion = false;
 
         if (GameManager.Instance.playerJustHitBall == (int)playerNumber && ballHitLeftCourt == !isMySideLeft) {
             playerStateMachine.SetState(statePlayerCheering);

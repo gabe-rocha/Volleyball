@@ -11,16 +11,32 @@ public class PlayerStateAnsweringMath : IState {
     }
 
     public void OnEnter() {
+        EventManager.Instance.StartListening(EventManager.Events.MathAnswerIsCorrect, OnMathQuestionAnswered);
+        EventManager.Instance.StartListening(EventManager.Events.BallHitTheGround, OnBallHitTheGround);
         Debug.Log("Player State: Answering Math");
-        player.animPlayer.SetBool("isAnsweringMath", true);
+        player.answeringQuestion = true;
+        // player.animPlayer.SetBool("isMoving", false);
     }
 
     public void OnExit() {
-        player.animPlayer.SetBool("isAnsweringMath", false);
+        EventManager.Instance.StopListening(EventManager.Events.MathAnswerIsCorrect, OnMathQuestionAnswered);
+        EventManager.Instance.StopListening(EventManager.Events.BallHitTheGround, OnBallHitTheGround);
+        // player.animPlayer.SetBool("isMoving", false);
     }
 
     public IState Tick() {
+        if (player.answeringQuestion) {
+            return this;
+        } else {
+            return player.statePlayerIdle;
+        }
+    }
 
-        return this;
+    private void OnMathQuestionAnswered() {
+        player.answeringQuestion = false;
+    }
+
+    private void OnBallHitTheGround() {
+        player.answeringQuestion = false;
     }
 }

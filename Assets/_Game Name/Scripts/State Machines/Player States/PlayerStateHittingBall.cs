@@ -23,6 +23,7 @@ public class PlayerStateHittingBall : IState {
 
     public void OnEnter() {
         Debug.Log("Player State: Hitting The Ball");
+        player.rb.velocity = Vector2.zero;
         HitBall();
     }
 
@@ -30,16 +31,52 @@ public class PlayerStateHittingBall : IState {
 
         player.animPlayer.SetTrigger("Hit Ball");
         animStartTime = Time.time;
-        EventManager.Instance.TriggerEventWithIntParam(EventManager.Events.PlayerHitTheBall, (int)player.playerNumber);
 
-        player.ball.attachedRigidbody.velocity = Vector2.zero;
-        var top = Data.midTopOfTheScreen;
-        var direction = top - player.transform.position;
-        direction.Normalize();
-        // other.attachedRigidbody.velocity = direction * Mathf.Abs(transform.position.x) * maxPower; //12 = -8 + maxPower
-        player.ball.attachedRigidbody.velocity = direction * 11f; //12 = -8 + maxPower
-        player.ball.attachedRigidbody.angularVelocity = UnityEngine.Random.Range(-1000f, 1000f);
-        // other.attachedRigidbody.AddForce(new Vector2(400, 300));
+        // player.ball.attachedRigidbody.velocity = Vector2.zero;
+        // var top = Data.midTopOfTheScreen;
+        // var direction = top - player.transform.position;
+        // direction.Normalize();
+        // player.ball.attachedRigidbody.velocity = direction * 5.5f; //5.5f = -8 + maxPower
+        // player.ball.attachedRigidbody.angularVelocity = UnityEngine.Random.Range(-1000f, 1000f);
+
+        // b.Rb.bodyType = RigidbodyType2D.Kinematic;
+
+        ParabolaController p = player.ball.gameObject.GetComponent<ParabolaController>();
+        p.StopFollow();
+
+        //Set Points
+        //Parabola initial point
+        var beginPoint = player.ball.gameObject.transform.position;
+        p.getPoints()[0].position = beginPoint;
+
+        //Parabola end point
+        Vector3 endPoint;
+        if (player.playerNumber == Player.PlayerNumber.One) {
+            endPoint = Data.playerTwo.transform.position;
+            endPoint.x += UnityEngine.Random.Range(-2f, 2f);
+            endPoint.x = Mathf.Clamp(endPoint.x, 1f, 7.5f);
+
+        } else {
+            endPoint = Data.playerOne.transform.position;
+            endPoint.x += UnityEngine.Random.Range(-2f, 2f);
+            endPoint.x = Mathf.Clamp(endPoint.x, -7.5f, -1f);
+        }
+        endPoint.y = -4f; //magic number
+        p.getPoints()[2].position = endPoint;
+
+        //Parabola mid position
+        var midPoint = p.getPoints()[1].position;
+        midPoint.x = beginPoint.x + endPoint.x;
+        p.getPoints()[1].position = midPoint;
+
+        //Make the ball follow the parabola again
+        Ball b = player.ball.GetComponent<Ball>();
+        b.followingParabola = true;
+        var speed = player.powerMeter.GetPower();
+        p.RefreshTransforms(speed);
+        p.FollowParabola();
+
+        EventManager.Instance.TriggerEventWithIntParam(EventManager.Events.PlayerHitTheBall, (int)player.playerNumber);
     }
 
     public void OnExit() { }
@@ -48,7 +85,12 @@ public class PlayerStateHittingBall : IState {
 
         //Animation completed?
         if (Time.time >= animStartTime + animationLength) {
-            return player.statePlayerIdle;
+
+            if (player.playerNumber == Player.PlayerNumber.One) {
+                return player.statePlayerAnsweringMath;
+            } else {
+                return player.statePlayerIdle;
+            }
         }
 
         return this;

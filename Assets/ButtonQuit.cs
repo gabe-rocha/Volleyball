@@ -6,14 +6,20 @@ using UnityEngine;
 public class ButtonQuit : MonoBehaviour {
     private Animator anim;
 
-    private void OnEnable() { }
-    private void OnDisable() { }
+    private void OnEnable() {
+
+        EventManager.Instance.StartListening(EventManager.Events.MatchEnded, OnGameOver);
+    }
+    private void OnDisable() {
+        EventManager.Instance.StartListening(EventManager.Events.MatchEnded, OnGameOver);
+
+    }
 
     private void Awake() {
         anim = GetComponent<Animator>();
     }
 
-    private void Show() {
+    private void OnGameOver() {
         StartCoroutine(WaitAndShow());
     }
 

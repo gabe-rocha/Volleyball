@@ -20,10 +20,16 @@ public class PlayerStateIdle : IState {
 
     public IState Tick() {
 
+        if (!player.ballIsHot) {
+            return this;
+        }
+
         if (player.playerNumber == Player.PlayerNumber.One) {
             horizontalInput = Input.GetAxisRaw("Horizontal");
 
-        } else if (player.playerNumber == Player.PlayerNumber.Two) {
+        }
+#if UNITY_EDITOR
+        else if (player.playerNumber == Player.PlayerNumber.Two) {
             if (Input.GetKey(KeyCode.J)) {
                 horizontalInput = -1f;
             } else if (Input.GetKey(KeyCode.L)) {
@@ -32,7 +38,7 @@ public class PlayerStateIdle : IState {
                 horizontalInput = 0f;
             }
         }
-
+#endif
         if (horizontalInput < -player.walkDeadzone || horizontalInput > player.walkDeadzone) {
             return player.statePlayerWalking;
         }

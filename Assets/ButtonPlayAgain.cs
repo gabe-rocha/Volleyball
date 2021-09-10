@@ -9,14 +9,20 @@ public class ButtonPlayAgain : MonoBehaviour {
     [SerializeField] private Image imageFadeOut;
     private Animator anim;
 
-    private void OnEnable() { }
-    private void OnDisable() { }
+    private void OnEnable() {
+
+        EventManager.Instance.StartListening(EventManager.Events.MatchEnded, OnGameOver);
+    }
+    private void OnDisable() {
+        EventManager.Instance.StartListening(EventManager.Events.MatchEnded, OnGameOver);
+
+    }
 
     private void Awake() {
         anim = GetComponent<Animator>();
     }
 
-    private void Show() {
+    private void OnGameOver() {
         StartCoroutine(WaitAndShow());
     }
     private IEnumerator WaitAndShow() {

@@ -17,7 +17,7 @@ public class PlayerStateWalking : IState {
     public void OnEnter() {
         player.animPlayer.SetBool("isMoving", true);
 
-        Debug.Log("Player State: Walking");
+        // Debug.Log("Player State: Walking");
     }
 
     public void OnExit() {
@@ -25,6 +25,11 @@ public class PlayerStateWalking : IState {
     }
 
     public IState Tick() {
+
+        if (!player.ballIsHot) {
+            return this;
+        }
+
         CheckBounds();
         Move();
 
@@ -42,13 +47,23 @@ public class PlayerStateWalking : IState {
                 var newPos = player.transform.position;
                 newPos.x = player.ballServePosition.position.x;
                 player.transform.position = newPos;
+            } else if (player.transform.position.x > -1.5f) {
+                var newPos = player.transform.position;
+                newPos.x = -1.5f;
+                player.transform.position = newPos;
             }
+
         } else if (player.playerNumber == Player.PlayerNumber.Two) {
             if (player.transform.position.x > player.ballServePosition.position.x) {
                 var newPos = player.transform.position;
                 newPos.x = player.ballServePosition.position.x;
                 player.transform.position = newPos;
+            } else if (player.transform.position.x < 1.5f) {
+                var newPos = player.transform.position;
+                newPos.x = 1.5f;
+                player.transform.position = newPos;
             }
+
         }
     }
 
@@ -56,7 +71,9 @@ public class PlayerStateWalking : IState {
         if (player.playerNumber == Player.PlayerNumber.One) {
             horizontalInput = Input.GetAxisRaw("Horizontal");
 
-        } else if (player.playerNumber == Player.PlayerNumber.Two) {
+        }
+#if UNITY_EDITOR
+        else if (player.playerNumber == Player.PlayerNumber.Two) {
             if (Input.GetKey(KeyCode.J)) {
                 horizontalInput = -1f;
             } else if (Input.GetKey(KeyCode.L)) {
@@ -65,6 +82,7 @@ public class PlayerStateWalking : IState {
                 horizontalInput = 0f;
             }
         }
+#endif
 
         direction = Vector3.right * horizontalInput * player.walkSpeed * Time.deltaTime;
         // player.transform.Translate(direction, Space.World);        

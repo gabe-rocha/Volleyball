@@ -13,13 +13,13 @@ public class PlayerStateMovingToPosition : IState {
     }
 
     public void OnEnter() {
-        Debug.Log("Player State: MovingToPosition");
+        // Debug.Log("Player State: MovingToPosition");
 
         if (GameManager.Instance.GetCurrentBallServer() == (int)player.playerNumber) {
-            Debug.Log($"{player.name} moving to serve position");
+            // Debug.Log($"{player.name} moving to serve position");
             movingToPosition = player.ballServePosition.position;
         } else {
-            Debug.Log($"{player.name} moving to mid of court position");
+            // Debug.Log($"{player.name} moving to mid of court position");
             movingToPosition = player.midOfCourtPosition.position;
         }
 
