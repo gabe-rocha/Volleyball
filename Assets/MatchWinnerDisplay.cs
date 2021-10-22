@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MatchWinnerDisplay : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI txtWhiteOutline, txtBlackOutline, txtPhrase;
+    [SerializeField] private ParticleSystem confetti;
 
     private Animator anim;
 
@@ -25,11 +26,25 @@ public class MatchWinnerDisplay : MonoBehaviour {
     }
 
     private IEnumerator WaitAndShow() {
+        SoundManager.Instance.PlayBGMIntro();
         yield return new WaitForSeconds(Data.DelayBeforeShowingFinalText);
 
-        txtPhrase.text = $"Player {GameManager.Instance.GetWinner()} Wins!";
+        var winner = GameManager.Instance.GetWinner();
+
+        if(winner == 1) {
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxFanfarre);
+        } else {
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxGameOver);
+        }
+
+        txtPhrase.text = $"Player {winner} Wins!";
         txtBlackOutline.text = txtPhrase.text;
         txtWhiteOutline.text = txtPhrase.text;
+
+        if(winner == 1) {
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxFanfarre);
+            confetti.Play();
+        }
 
         anim.SetTrigger("Show");
     }

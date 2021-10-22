@@ -14,12 +14,17 @@ public class PlayerStateMovingToPosition : IState {
 
     public void OnEnter() {
         // Debug.Log("Player State: MovingToPosition");
+        EventManager.Instance.StartListening(EventManager.Events.MathAnswerIsCorrect, OnMathQuestionAnswered);
 
-        if (GameManager.Instance.GetCurrentBallServer() == (int)player.playerNumber) {
-            // Debug.Log($"{player.name} moving to serve position");
+        if(player.isBallServer && !player.alreadyHitTheBall) {
+            Debug.Log($"{player.name} moving to serve position");
             movingToPosition = player.ballServePosition.position;
+
+        } else if(player.isBallServer && player.alreadyHitTheBall) {
+            movingToPosition = player.midOfCourtPosition.position;
+
         } else {
-            // Debug.Log($"{player.name} moving to mid of court position");
+            Debug.Log($"{player.name} moving to mid of court position");
             movingToPosition = player.midOfCourtPosition.position;
         }
 
@@ -28,12 +33,19 @@ public class PlayerStateMovingToPosition : IState {
     }
 
     public void OnExit() {
+        EventManager.Instance.StopListening(EventManager.Events.MathAnswerIsCorrect, OnMathQuestionAnswered);
         player.animPlayer.SetBool("isMoving", false);
     }
 
     public IState Tick() {
 
-        if (arrived) {
+        // if(arrived && player.isBallServer = false; && player.playerNumber == Player.PlayerNumber.One) {
+        // return player.statePlayerAnsweringMath;
+        // } else 
+        if(arrived && player.answeringQuestion) {
+            player.isInplace = true;
+            return player.statePlayerAnsweringMath;
+        } else if(arrived) {
             return player.statePlayerIdle;
         } else {
             MoveToPosition();
@@ -42,10 +54,15 @@ public class PlayerStateMovingToPosition : IState {
     }
 
     private void MoveToPosition() {
-        if (player.transform.position.x > movingToPosition.x + 0.1f || player.transform.position.x < movingToPosition.x - 0.1f) {
+        if(player.transform.position.x > movingToPosition.x + 0.1f || player.transform.position.x < movingToPosition.x - 0.1f) {
             player.transform.position = Vector3.MoveTowards(player.transform.position, movingToPosition, player.walkSpeed * Time.deltaTime);
         } else {
             arrived = true;
         }
+    }
+
+    private void OnMathQuestionAnswered() {
+        player.isInplace = true;
+        player.answeringQuestion = false;
     }
 }

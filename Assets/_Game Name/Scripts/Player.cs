@@ -27,6 +27,10 @@ public class Player : MonoBehaviour {
     internal bool ballIsHot = false; //means the ball is being played
     internal bool answeringQuestion = false;
     bool isMySideLeft;
+    internal float power = 6f, initialPower;
+    internal bool isBallServer = false;
+    internal bool alreadyHitTheBall = false;
+    internal bool isInplace = false;
 
     private void OnEnable() {
         EventManager.Instance.StartListening(EventManager.Events.GetReadyForSetBegin, OnGetReadyForSetBegin);
@@ -42,10 +46,12 @@ public class Player : MonoBehaviour {
     }
 
     private void OnMatchEnded() {
-        if (GameManager.Instance.GetWinner() == (int)playerNumber) {
-            playerStateMachine.SetState(statePlayerCheering);
+        if(GameManager.Instance.GetWinner() == (int)playerNumber) {
+            // playerStateMachine.SetState(statePlayerCheering);
+            animPlayer.SetTrigger("Cheer Forever");
         } else {
-            playerStateMachine.SetState(statePlayerCrying);
+            // playerStateMachine.SetState(statePlayerCrying);
+            animPlayer.SetTrigger("Cry Forever");
         }
     }
 
@@ -67,6 +73,8 @@ public class Player : MonoBehaviour {
 
         isMySideLeft = transform.position.x <= 0f;
 
+        initialPower = power;
+
         Data.playerOne = this;
     }
 
@@ -75,9 +83,9 @@ public class Player : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D obj) {
-        if (obj.gameObject.CompareTag("Ball")) {
+        if(obj.gameObject.CompareTag("Ball")) {
 
-            if (ballIsHot == false || answeringQuestion) {
+            if(ballIsHot == false || answeringQuestion) {
                 return;
             }
 
@@ -89,20 +97,26 @@ public class Player : MonoBehaviour {
     }
 
     private void OnGetReadyForSetBegin() {
+        isBallServer = GameManager.Instance.GetCurrentBallServer() == (int)playerNumber;
         playerStateMachine.SetState(stateMovingToPosition);
     }
 
     private void OnBallHitTheGround(bool ballHitLeftCourt) {
         ballIsHot = false;
         answeringQuestion = false;
+        isBallServer = false;
+        alreadyHitTheBall = false;
+        isInplace = false;
 
-        if (GameManager.Instance.playerJustHitBall == (int)playerNumber && ballHitLeftCourt == !isMySideLeft) {
+        power = initialPower;
+
+        if(GameManager.Instance.playerJustHitBall == (int)playerNumber && ballHitLeftCourt == !isMySideLeft) {
             playerStateMachine.SetState(statePlayerCheering);
-        } else if (GameManager.Instance.playerJustHitBall == (int)playerNumber && ballHitLeftCourt == isMySideLeft) {
+        } else if(GameManager.Instance.playerJustHitBall == (int)playerNumber && ballHitLeftCourt == isMySideLeft) {
             playerStateMachine.SetState(statePlayerCrying);
-        } else if (GameManager.Instance.playerJustHitBall != (int)playerNumber && ballHitLeftCourt == !isMySideLeft) {
+        } else if(GameManager.Instance.playerJustHitBall != (int)playerNumber && ballHitLeftCourt == !isMySideLeft) {
             playerStateMachine.SetState(statePlayerCheering);
-        } else if (GameManager.Instance.playerJustHitBall != (int)playerNumber && ballHitLeftCourt == isMySideLeft) {
+        } else if(GameManager.Instance.playerJustHitBall != (int)playerNumber && ballHitLeftCourt == isMySideLeft) {
             playerStateMachine.SetState(statePlayerCrying);
         }
     }

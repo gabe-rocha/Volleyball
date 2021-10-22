@@ -38,10 +38,10 @@ public class MathQuestionDisplay : MonoBehaviour {
 
     private void OnDisplayMathQuestion() {
 
-        int leftNumber = UnityEngine.Random.Range(1, 5);
-        int rightNumber = UnityEngine.Random.Range(1, 5);
+        int leftNumber = UnityEngine.Random.Range(1, 10);
+        int rightNumber = UnityEngine.Random.Range(1, 10);
 
-        int opID = UnityEngine.Random.Range(0, 1);
+        int opID = UnityEngine.Random.Range(0, 4);
         string operation = "";
 
         switch (opID) {
@@ -59,8 +59,8 @@ public class MathQuestionDisplay : MonoBehaviour {
                 break;
             case (int)Operators.Division:
                 while (leftNumber % rightNumber != 0) {
-                    leftNumber = UnityEngine.Random.Range(0, 99);
-                    rightNumber = UnityEngine.Random.Range(1, 99);
+                    leftNumber = UnityEngine.Random.Range(0, 21);
+                    rightNumber = UnityEngine.Random.Range(1, 11);
                 }
                 operation = "÷";
                 expectedResult = (leftNumber / rightNumber).ToString();
@@ -82,6 +82,7 @@ public class MathQuestionDisplay : MonoBehaviour {
 
         anim.SetTrigger("Show");
         isShowing = true;
+        SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxMathQuestionShow);
     }
 
     public void OnButtonOkPressed() {
@@ -89,17 +90,26 @@ public class MathQuestionDisplay : MonoBehaviour {
     }
 
     private void ValidateInput(string input) {
-        if (input == expectedResult) {
+        if(!isShowing) {
+            return;
+        }
+
+        if(input == expectedResult) {
             EventManager.Instance.TriggerEvent(EventManager.Events.MathAnswerIsCorrect);
             anim.SetTrigger("Hide");
             isShowing = false;
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxMathQuestionCorrect);
+
+        } else {
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxWrong);
+            inputAnswer.ActivateInputField();
         }
     }
 
     private void OnBallHitGround() {
-        if (isShowing) {
+        if(isShowing) {
             anim.SetTrigger("Hide");
-            isShowing = false;
         }
+        isShowing = false;
     }
 }

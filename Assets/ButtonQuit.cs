@@ -32,5 +32,9 @@ public class ButtonQuit : MonoBehaviour {
     //     anim.SetTrigger("Hide");
     // }
 
-    public void OnButtonQuitPressed() { }
+    public void OnButtonQuitPressed() {
+        //SceneManager.LoadScene...
+
+        SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxButtonQuit);
+    }
 }

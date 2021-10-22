@@ -21,6 +21,7 @@ public class FinalDistanceText : MonoBehaviour {
 
     private IEnumerator WaitAndShow() {
         yield return new WaitForSeconds(Data.DelayBeforeShowingFinalText);
+        SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxFanfarre);
     }
     private void Hide() { }
 }

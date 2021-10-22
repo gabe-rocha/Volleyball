@@ -24,13 +24,18 @@ public class PlayerStateCrying : IState {
     public void OnEnter() {
         // Debug.Log("Player State: Crying");
         player.animPlayer.SetTrigger("Cry");
+
+        if(player.playerNumber == Player.PlayerNumber.One) {
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxGameOver);
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxAww);
+        }
     }
 
     public void OnExit() { }
 
     public IState Tick() {
         //Animation completed?
-        if (Time.time >= animStartTime + animationLength) {
+        if(Time.time >= animStartTime + animationLength) {
             return player.statePlayerIdle;
         }
         return this;

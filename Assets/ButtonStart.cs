@@ -10,6 +10,7 @@ public class ButtonStart : MonoBehaviour {
 
     private IEnumerator StartGame() {
         GetComponent<Animator>().SetTrigger("Start");
+        SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxButtonStart);
         yield return new WaitForSeconds(0.5f);
         EventManager.Instance.TriggerEvent(EventManager.Events.OnStartButtonPressed);
     }

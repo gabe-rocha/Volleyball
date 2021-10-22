@@ -21,6 +21,7 @@ public class EventManager : MonoBehaviour {
         StartSet,
         DisplayMathQuestion,
         MathAnswerIsCorrect,
+        StartCountdown,
     }
 
     private Dictionary<EventManager.Events, UnityEvent> simpleEventDictionary = new Dictionary<EventManager.Events, UnityEvent>();
@@ -34,7 +35,7 @@ public class EventManager : MonoBehaviour {
     public static EventManager Instance { get; private set; }
 
     private void Awake() {
-        if (Instance == null) {
+        if(Instance == null) {
             Instance = this;
             DontDestroyOnLoad(gameObject);
         } else {
@@ -47,7 +48,7 @@ public class EventManager : MonoBehaviour {
     public void StartListening(EventManager.Events eventName, UnityAction listener) {
         UnityEvent thisEvent = null;
 
-        if (simpleEventDictionary.TryGetValue(eventName, out thisEvent)) {
+        if(simpleEventDictionary.TryGetValue(eventName, out thisEvent)) {
             thisEvent.AddListener(listener);
         } else {
             thisEvent = new UnityEvent();
@@ -58,7 +59,7 @@ public class EventManager : MonoBehaviour {
 
     public void StartListeningWithGOParam(EventManager.Events eventName, UnityAction<GameObject> listener) {
         UnityEvent<GameObject> thisParamEvent = null;
-        if (paramGOEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramGOEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.AddListener(listener);
         } else {
             thisParamEvent = new UnityEvent<GameObject>();
@@ -69,7 +70,7 @@ public class EventManager : MonoBehaviour {
 
     public void StartListeningWithIntParam(EventManager.Events eventName, UnityAction<int> listener) {
         UnityEvent<int> thisParamEvent = null;
-        if (paramIntEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramIntEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.AddListener(listener);
         } else {
             thisParamEvent = new UnityEvent<int>();
@@ -79,7 +80,7 @@ public class EventManager : MonoBehaviour {
     }
     public void StartListeningWithFloatParam(EventManager.Events eventName, UnityAction<float> listener) {
         UnityEvent<float> thisParamEvent = null;
-        if (paramFloatEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramFloatEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.AddListener(listener);
         } else {
             thisParamEvent = new UnityEvent<float>();
@@ -90,7 +91,7 @@ public class EventManager : MonoBehaviour {
 
     public void StartListeningWithStringParam(EventManager.Events eventName, UnityAction<string> listener) {
         UnityEvent<string> thisParamEvent = null;
-        if (paramStringEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramStringEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.AddListener(listener);
         } else {
             thisParamEvent = new UnityEvent<string>();
@@ -101,7 +102,7 @@ public class EventManager : MonoBehaviour {
 
     public void StartListeningWithVec3Param(EventManager.Events eventName, UnityAction<Vector3> listener) {
         UnityEvent<Vector3> thisParamEvent = null;
-        if (paramVec3EventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramVec3EventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.AddListener(listener);
         } else {
             thisParamEvent = new UnityEvent<Vector3>();
@@ -112,7 +113,7 @@ public class EventManager : MonoBehaviour {
 
     public void StartListeningWithBoolParam(EventManager.Events eventName, UnityAction<bool> listener) {
         UnityEvent<bool> thisParamEvent = null;
-        if (paramBoolEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramBoolEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.AddListener(listener);
         } else {
             thisParamEvent = new UnityEvent<bool>();
@@ -127,54 +128,54 @@ public class EventManager : MonoBehaviour {
 
     //========================
     public void StopListening(EventManager.Events eventName, UnityAction listener) {
-        if (Instance == null)return;
+        if(Instance == null)return;
         UnityEvent thisEvent = null;
-        if (simpleEventDictionary.TryGetValue(eventName, out thisEvent)) {
+        if(simpleEventDictionary.TryGetValue(eventName, out thisEvent)) {
             thisEvent.RemoveListener(listener);
         }
     }
 
     public void StopListeningWithGOParam(EventManager.Events eventName, UnityAction<GameObject> listener) {
-        if (Instance == null)return;
+        if(Instance == null)return;
         UnityEvent<GameObject> thisParamEvent = null;
-        if (paramGOEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramGOEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.RemoveListener(listener);
         }
     }
     public void StopListeningWithIntParam(EventManager.Events eventName, UnityAction<int> listener) {
-        if (Instance == null)return;
+        if(Instance == null)return;
         UnityEvent<int> thisParamEvent = null;
-        if (paramIntEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramIntEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.RemoveListener(listener);
         }
     }
     public void StopListeningWithFloatParam(EventManager.Events eventName, UnityAction<float> listener) {
-        if (Instance == null)return;
+        if(Instance == null)return;
         UnityEvent<float> thisParamEvent = null;
-        if (paramFloatEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramFloatEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.RemoveListener(listener);
         }
     }
     public void StopListeningWithStringParam(EventManager.Events eventName, UnityAction<string> listener) {
-        if (Instance == null)return;
+        if(Instance == null)return;
         UnityEvent<string> thisParamEvent = null;
-        if (paramStringEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramStringEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.RemoveListener(listener);
         }
     }
 
     public void StopListeningWithVec3Param(EventManager.Events eventName, UnityAction<Vector3> listener) {
-        if (Instance == null)return;
+        if(Instance == null)return;
         UnityEvent<Vector3> thisParamEvent = null;
-        if (paramVec3EventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramVec3EventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.RemoveListener(listener);
         }
     }
 
     public void StopListeningWithBoolParam(EventManager.Events eventName, UnityAction<bool> listener) {
-        if (Instance == null)return;
+        if(Instance == null)return;
         UnityEvent<bool> thisParamEvent = null;
-        if (paramBoolEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramBoolEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.RemoveListener(listener);
         }
     }
@@ -182,47 +183,47 @@ public class EventManager : MonoBehaviour {
     //========================
     public void TriggerEvent(EventManager.Events eventName) {
         UnityEvent thisEvent = null;
-        if (simpleEventDictionary.TryGetValue(eventName, out thisEvent)) {
+        if(simpleEventDictionary.TryGetValue(eventName, out thisEvent)) {
             thisEvent.Invoke();
         }
     }
 
     public void TriggerEventWithGOParam(EventManager.Events eventName, GameObject go) {
         UnityEvent<GameObject> thisParamEvent = null;
-        if (paramGOEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramGOEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.Invoke(go);
         }
     }
 
     public void TriggerEventWithIntParam(EventManager.Events eventName, int i) {
         UnityEvent<int> thisParamEvent = null;
-        if (paramIntEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramIntEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.Invoke(i);
         }
     }
     public void TriggerEventWithFloatParam(EventManager.Events eventName, float value) {
         UnityEvent<float> thisParamEvent = null;
-        if (paramFloatEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramFloatEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.Invoke(value);
         }
     }
     public void TriggerEventWithStringParam(EventManager.Events eventName, string s) {
         UnityEvent<string> thisParamEvent = null;
-        if (paramStringEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramStringEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.Invoke(s);
         }
     }
 
     public void TriggerEventWithVec3Param(EventManager.Events eventName, Vector3 vec3) {
         UnityEvent<Vector3> thisParamEvent = null;
-        if (paramVec3EventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramVec3EventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.Invoke(vec3);
         }
     }
 
     public void TriggerEventWithBoolParam(EventManager.Events eventName, bool b) {
         UnityEvent<bool> thisParamEvent = null;
-        if (paramBoolEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
+        if(paramBoolEventDictionary.TryGetValue(eventName, out thisParamEvent)) {
             thisParamEvent.Invoke(b);
         }
     }

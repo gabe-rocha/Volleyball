@@ -35,12 +35,12 @@ public class ParabolaController : MonoBehaviour {
     protected ParabolaFly parabolaFly;
 
     void OnDrawGizmos() {
-        if (gizmo == null) {
+        if(gizmo == null) {
             gizmo = new ParabolaFly(ParabolaRoot.transform);
         }
 
         gizmo.RefreshTransforms(1f);
-        if ((gizmo.Points.Length - 1) % 2 != 0)
+        if((gizmo.Points.Length - 1) % 2 != 0)
             return;
 
         int accur = 50;
@@ -61,7 +61,7 @@ public class ParabolaController : MonoBehaviour {
 
         parabolaFly = new ParabolaFly(ParabolaRoot.transform);
 
-        if (Autostart) {
+        if(Autostart) {
             RefreshTransforms(Speed);
             FollowParabola();
         }
@@ -71,7 +71,7 @@ public class ParabolaController : MonoBehaviour {
     void Update() {
         nextParbola = false;
 
-        if (Animation && parabolaFly != null && animationTime < parabolaFly.GetDuration()) {
+        if(Animation && parabolaFly != null && animationTime < parabolaFly.GetDuration()) {
             int parabolaIndexBefore;
             int parabolaIndexAfter;
             parabolaFly.GetParabolaIndexAtTime(animationTime, out parabolaIndexBefore);
@@ -80,12 +80,12 @@ public class ParabolaController : MonoBehaviour {
 
             transform.position = parabolaFly.GetPositionAtTime(animationTime);
 
-            if (parabolaIndexBefore != parabolaIndexAfter)
+            if(parabolaIndexBefore != parabolaIndexAfter)
                 nextParbola = true;
 
             //if (transform.position.y > HighestPoint.y)
             //HighestPoint = transform.position;
-        } else if (Animation && parabolaFly != null && animationTime > parabolaFly.GetDuration()) {
+        } else if(Animation && parabolaFly != null && animationTime > parabolaFly.GetDuration()) {
             animationTime = float.MaxValue;
             Animation = false;
         }
@@ -155,11 +155,11 @@ public class ParabolaController : MonoBehaviour {
             Points = transforms.ToArray();
 
             //check if odd
-            if ((Points.Length - 1) % 2 != 0)
+            if((Points.Length - 1) % 2 != 0)
                 throw new UnityException("ParabolaRoot needs odd number of points");
 
             //check if larger is needed
-            if (parabolas == null || parabolas.Length < (Points.Length - 1) / 2) {
+            if(parabolas == null || parabolas.Length < (Points.Length - 1) / 2) {
                 parabolas = new Parabola3D[(Points.Length - 1) / 2];
                 partDuration = new float[parabolas.Length];
             }
@@ -204,16 +204,16 @@ public class ParabolaController : MonoBehaviour {
         /// Returns children transforms, sorted by name.
         /// </summary>
         public void RefreshTransforms(float speed) {
-            if (speed <= 0f)
+            if(speed <= 0f)
                 speed = 1f;
 
-            if (Points != null) {
+            if(Points != null) {
 
                 completeDuration = 0;
 
                 //create parabolas
                 for (int i = 0; i < parabolas.Length; i++) {
-                    if (parabolas[i] == null)
+                    if(parabolas[i] == null)
                         parabolas[i] = new Parabola3D();
 
                     parabolas[i].Set(Points[i * 2].position, Points[i * 2 + 1].position, Points[i * 2 + 2].position);
@@ -269,13 +269,13 @@ public class ParabolaController : MonoBehaviour {
             var percent = length / Length;
 
             var x = percent * (C - A).magnitude;
-            if (tooClose)
+            if(tooClose)
                 x = percent * 2f;
 
             Vector3 pos;
 
             pos = A * (1f - percent) + C * percent + h.normalized * parabola2D.f(x);
-            if (tooClose)
+            if(tooClose)
                 pos.Set(A.x, pos.y, A.z);
 
             return pos;
@@ -283,7 +283,7 @@ public class ParabolaController : MonoBehaviour {
 
         private void refreshCurve() {
 
-            if (Vector2.Distance(new Vector2(A.x, A.z), new Vector2(B.x, B.z)) < 0.1f &&
+            if(Vector2.Distance(new Vector2(A.x, A.z), new Vector2(B.x, B.z)) < 0.1f &&
                 Vector2.Distance(new Vector2(B.x, B.z), new Vector2(C.x, C.z)) < 0.1f)
                 tooClose = true;
             else
@@ -291,7 +291,7 @@ public class ParabolaController : MonoBehaviour {
 
             Length = Vector3.Distance(A, B) + Vector3.Distance(B, C);
 
-            if (!tooClose) {
+            if(!tooClose) {
                 refreshCurveNormal();
             } else {
                 refreshCurveClose();
@@ -377,7 +377,7 @@ public class ParabolaController : MonoBehaviour {
             //b = (x1Â²(y2 - y3) + x2Â²(y3 - y1) + x3Â²(y1 - y2))/ ((x1 - x2)(x1 - x3)(x2 - x3))
             //c = (x1Â²(x2y3 - x3y2) + x1(x3Â²y2 - x2Â²y3) + x2x3y1(x2 - x3))/ ((x1 - x2)(x1 - x3)(x2 - x3))
             var divisor = ((A.x - B.x) * (A.x - C.x) * (C.x - B.x));
-            if (divisor == 0f) {
+            if(divisor == 0f) {
                 A.x += 0.00001f;
                 B.x += 0.00002f;
                 C.x += 0.00003f;

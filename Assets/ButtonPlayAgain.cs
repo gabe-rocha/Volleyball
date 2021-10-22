@@ -39,6 +39,9 @@ public class ButtonPlayAgain : MonoBehaviour {
     }
 
     private IEnumerator FadeOutSceneAndReload() {
+
+        SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxButtonPlayAgain);
+
         var startTime = Time.time;
         while (Time.time < startTime + Data.fadeOutSpeed) {
             var color = imageFadeOut.color;

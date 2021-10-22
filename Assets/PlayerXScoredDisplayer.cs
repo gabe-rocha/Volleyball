@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerXScoredDisplayer : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI txtWhiteOutline, txtBlackOutline, txtPhrase;
+    [SerializeField] private ParticleSystem confetti;
 
     private Animator anim;
 
@@ -36,6 +37,11 @@ public class PlayerXScoredDisplayer : MonoBehaviour {
         txtWhiteOutline.text = txtPhrase.text;
 
         anim.SetTrigger("Show");
+
+        if(GameManager.Instance.GetPlayerWhoJustScored() == 1) {
+            confetti.Play();
+        }
+
         StartCoroutine(WaitAndHide());
     }
 

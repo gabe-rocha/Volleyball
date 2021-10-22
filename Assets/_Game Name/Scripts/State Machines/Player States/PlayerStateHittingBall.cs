@@ -19,11 +19,14 @@ public class PlayerStateHittingBall : IState {
                     break;
             }
         }
+
     }
 
     public void OnEnter() {
         Debug.Log("Player State: Hitting The Ball");
         player.rb.velocity = Vector2.zero;
+
+        player.alreadyHitTheBall = true;
         HitBall();
     }
 
@@ -51,14 +54,14 @@ public class PlayerStateHittingBall : IState {
 
         //Parabola end point
         Vector3 endPoint;
-        if (player.playerNumber == Player.PlayerNumber.One) {
+        if(player.playerNumber == Player.PlayerNumber.One) {
             endPoint = Data.playerTwo.transform.position;
-            endPoint.x += UnityEngine.Random.Range(-2f, 2f);
+            // endPoint.x += UnityEngine.Random.Range(-2f, 2f);
             endPoint.x = Mathf.Clamp(endPoint.x, 1f, 7.5f);
 
         } else {
             endPoint = Data.playerOne.transform.position;
-            endPoint.x += UnityEngine.Random.Range(-2f, 2f);
+            // endPoint.x += UnityEngine.Random.Range(-2f, 2f);
             endPoint.x = Mathf.Clamp(endPoint.x, -7.5f, -1f);
         }
         endPoint.y = -4f; //magic number
@@ -72,9 +75,17 @@ public class PlayerStateHittingBall : IState {
         //Make the ball follow the parabola again
         Ball b = player.ball.GetComponent<Ball>();
         b.followingParabola = true;
-        var speed = player.powerMeter.GetPower();
-        p.RefreshTransforms(speed);
+        b.Rotate();
+        // var speed = player.powerMeter.GetPower();
+
+        // p.RefreshTransforms(50f);
+
+        player.power += 0.75f;
+        p.Speed = player.power;
         p.FollowParabola();
+
+        Debug.Log($"Ball Speed: {p.Speed}");
+        SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxBallHitGround);
 
         EventManager.Instance.TriggerEventWithIntParam(EventManager.Events.PlayerHitTheBall, (int)player.playerNumber);
     }
@@ -84,11 +95,13 @@ public class PlayerStateHittingBall : IState {
     public IState Tick() {
 
         //Animation completed?
-        if (Time.time >= animStartTime + animationLength) {
+        if(Time.time >= animStartTime + animationLength) {
 
-            if (player.playerNumber == Player.PlayerNumber.One) {
+            if(player.playerNumber == Player.PlayerNumber.One) {
                 return player.statePlayerAnsweringMath;
-            } else {
+            } else if(player.playerNumber == Player.PlayerNumber.Two && player.isBallServer) {
+                return player.stateMovingToPosition;
+            } else if(player.playerNumber == Player.PlayerNumber.Two) {
                 return player.statePlayerIdle;
             }
         }

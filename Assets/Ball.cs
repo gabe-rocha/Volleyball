@@ -16,6 +16,7 @@ public class Ball : MonoBehaviour {
     internal bool followingParabola = false;
     private float lastTimeBallPosition;
     private Vector3 lastPosition;
+    private Coroutine rotateCor;
 
     private void Awake() {
         Rb = GetComponent<Rigidbody2D>();
@@ -43,10 +44,11 @@ public class Ball : MonoBehaviour {
     }
 
     private IEnumerator MoveToServingPositionCor() {
+        StopRotating();
 
         col.enabled = false;
 
-        if (GameManager.Instance.GetCurrentBallServer() == 1) {
+        if(GameManager.Instance.GetCurrentBallServer() == 1) {
             targetPosition = playerOneBallServePosition.position;
         } else {
             targetPosition = playerTwoBallServePosition.position;
@@ -73,8 +75,8 @@ public class Ball : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        if (followingParabola) {
-            if (parabolaController.Animation == false) {
+        if(followingParabola) {
+            if(parabolaController.Animation == false) {
                 followingParabola = false;
                 //reached the end of the parabola
                 // bool leftSide = transform.position.x <= 0f;
@@ -89,7 +91,7 @@ public class Ball : MonoBehaviour {
                 return;
             }
             float step = 0.1f;
-            if (Time.time > lastTimeBallPosition + step) {
+            if(Time.time > lastTimeBallPosition + step) {
                 lastTimeBallPosition = Time.time;
                 lastPosition = transform.position;
 
@@ -97,19 +99,20 @@ public class Ball : MonoBehaviour {
             }
         }
 
-        Debug.DrawLine(lastPosition, transform.position, Color.magenta);
+        // Debug.DrawLine(lastPosition, transform.position, Color.magenta);
 
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
-        if (alreadyHitGroundThisSet) {
+        if(alreadyHitGroundThisSet) {
             // Rb.velocity = Vector2.zero;
             // Rb.angularVelocity = 0f;
             // Rb.bodyType = RigidbodyType2D.Kinematic;
             return;
         }
 
-        if (other.gameObject.CompareTag("Ground")) {
+        if(other.gameObject.CompareTag("Ground")) {
+            StopRotating();
             // Debug.Log("Ball hit Ground");
 
             alreadyHitGroundThisSet = true;
@@ -119,14 +122,40 @@ public class Ball : MonoBehaviour {
             // rb.bodyType = RigidbodyType2D.Dynamic;
 
             bool leftSide = transform.position.x <= 0f;
-            if (leftSide) {
+            if(leftSide) {
                 rb.AddForce(new Vector2(-10, 0));
             } else {
                 rb.AddForce(new Vector2(10, 0));
             }
 
+            SoundManager.Instance.PlaySfx(SoundManager.Instance.sfxBallHitGround);
+
             EventManager.Instance.TriggerEvent(EventManager.Events.BallHitTheGround);
             EventManager.Instance.TriggerEventWithBoolParam(EventManager.Events.BallHitTheGround, leftSide);
+        } else if(other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Player 2")) {
+            Rotate();
+        }
+    }
+
+    public void Rotate() {
+        StopRotating();
+
+        rotateCor = StartCoroutine(RotateCor());
+    }
+
+    public void StopRotating() {
+        if(rotateCor != null) {
+            StopCoroutine(rotateCor);
+        }
+    }
+
+    private IEnumerator RotateCor() {
+        float degrees = UnityEngine.Random.Range(180, 360);
+        degrees *= UnityEngine.Random.Range(1, 11) < 5 ? 1 : -1;
+        while (true) {
+            transform.Rotate(Vector3.forward * degrees * Time.deltaTime);
+            // Debug.Log($"Rotating: {degrees}");
+            yield return null;
         }
     }
 }

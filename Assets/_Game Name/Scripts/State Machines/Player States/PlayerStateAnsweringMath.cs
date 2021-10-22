@@ -25,7 +25,9 @@ public class PlayerStateAnsweringMath : IState {
     }
 
     public IState Tick() {
-        if (player.answeringQuestion) {
+        if(player.answeringQuestion && player.isBallServer && !player.isInplace) {
+            return player.stateMovingToPosition;
+        } else if(player.answeringQuestion) {
             return this;
         } else {
             return player.statePlayerIdle;

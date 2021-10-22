@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class PowerMeter : MonoBehaviour {
     [SerializeField] private Image imgNeedle;
     [SerializeField] private Transform needleBegin, needleEnd;
-    [SerializeField] private float needleSpeed = 2f, minPower = 5f, maxPower = 5f;
+    [SerializeField] private float needleSpeed = 2f, minPower = 5f, maxPower = 5f, power;
 
     private Coroutine needleMoveCor;
 
@@ -24,6 +24,7 @@ public class PowerMeter : MonoBehaviour {
 
     private void Start() {
         ResetNeedlePosition();
+        power = minPower;
     }
 
     private void OnBallIsInPosition() {
@@ -43,7 +44,7 @@ public class PowerMeter : MonoBehaviour {
     }
 
     private void OnMathAnswerIsCorrect() {
-        if (needleMoveCor != null) {
+        if(needleMoveCor != null) {
             StopCoroutine(needleMoveCor);
         }
     }
@@ -54,13 +55,11 @@ public class PowerMeter : MonoBehaviour {
 
     internal float GetPower() {
 
-        var totalDistance = needleBegin.position.y - needleEnd.position.y;
-        var needleDelta = imgNeedle.transform.position.y - needleEnd.position.y;
-        var percentPowerLost = needleDelta / totalDistance;
+        // var totalDistance = needleBegin.position.y - needleEnd.position.y;
+        // var needleDelta = imgNeedle.transform.position.y - needleEnd.position.y;
+        // var percentPowerLost = needleDelta / totalDistance;
 
-        var power = maxPower * percentPowerLost;
-
-        power = power > minPower ? power : minPower;
+        power = power > maxPower ? maxPower : power + 1f;
         Debug.Log($"Power: {power}");
         return power;
     }
